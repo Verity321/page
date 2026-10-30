@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Клуб ничего обычного</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      color: #fff;
+      font-family: system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse at 15% 20%, #ff4f9a 0, transparent 35%),
+        radial-gradient(ellipse at 85% 80%, #664cff 0, transparent 38%),
+        linear-gradient(135deg, #16132f, #241044);
+    }
+
+    .card {
+      width: min(90vw, 620px);
+      padding: 48px 32px;
+      text-align: center;
+      border: 1px solid #ffffff30;
+      border-radius: 32px;
+      background: #ffffff12;
+      box-shadow: 0 24px 100px #09051c88;
+      backdrop-filter: blur(18px);
+      animation: appear .7s ease-out;
+    }
+
+    .emoji {
+      font-size: 72px;
+      display: inline-block;
+      animation: wobble 2s infinite ease-in-out;
+    }
+
+    h1 {
+      margin: 14px 0;
+      font-size: clamp(2.2rem, 8vw, 4rem);
+      line-height: 1;
+      letter-spacing: -3px;
+    }
+
+    p {
+      color: #e4dff9;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 22px;
+      color: #25123c;
+      background: #ffe66d;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform .18s, box-shadow .18s;
+    }
+
+    button:hover {
+      transform: translateY(-4px) rotate(-2deg);
+      box-shadow: 0 10px 28px #ffe66d55;
+    }
+
+    button.secondary {
+      color: white;
+      background: #ffffff20;
+      border: 1px solid #ffffff40;
+    }
+
+    #message {
+      min-height: 30px;
+      margin-top: 24px;
+      color: #ffe66d;
+      font-weight: 700;
+    }
+
+    .confetti {
+      position: fixed;
+      top: -20px;
+      width: 10px;
+      height: 14px;
+      pointer-events: none;
+      animation: fall 2.4s linear forwards;
+    }
+
+    @keyframes fall {
+      to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+
+    @keyframes wobble {
+      0%, 100% { transform: rotate(-8deg) scale(1); }
+      50% { transform: rotate(8deg) scale(1.12); }
+    }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(20px) scale(.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="emoji" id="emoji">🛸</div>
+    <h1>Ну привет,<br>легенда.</h1>
+    <p>Ты попал(а) в клуб ничего обычного.<br>Тут официально разрешено быть собой и нажимать кнопки.</p>
+
+    <div class="buttons">
+      <button onclick="party()">Устроить хаос ✨</button>
+      <button class="secondary" onclick="compliment()">Скажи что-нибудь хорошее</button>
+    </div>
+
+    <div id="message">Ждём твоего первого клика…</div>
+  </main>
+
+  <script>
+    const compliments = [
+      "У тебя сегодня вайб главного героя.",
+      "Ты выглядишь как человек, который знает секретный уровень.",
+      "Мир стал чуть веселее, потому что ты здесь.",
+      "Твоя энергия — это отдельный вид магии.",
+      "Даже этот сайт считает тебя классным человеком."
+    ];
+
+    const emojis = ["🛸", "🐸", "🪩", "🍕", "👾", "🦆", "🌈"];
+
+    function compliment() {
+      document.getElementById("message").textContent =
+        compliments[Math.floor(Math.random() * compliments.length)];
+      document.getElementById("emoji").textContent =
+        emojis[Math.floor(Math.random() * emojis.length)];
+    }
+
+    function party() {
+      document.getElementById("message").textContent = "ХАОС УСПЕШНО УСТРОЕН. 🪩";
+      for (let i = 0; i < 100; i++) {
+        const piece = document.createElement("div");
+        piece.className = "confetti";
+        piece.style.left = Math.random() * 100 + "vw";
+        piece.style.background = `hsl(${Math.random() * 360}, 90%, 65%)`;
+        piece.style.animationDelay = Math.random() * 0.7 + "s";
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 3200);
+      }
+    }
+  </script>
+</body>
+</html>
