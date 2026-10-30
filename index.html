@@ -1,163 +1,302 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Клуб ничего обычного</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Сапёр 150 × 150</title>
   <style>
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-      color: #fff;
+      padding: 24px;
+      color: #e8edff;
+      background: #111522;
       font-family: system-ui, sans-serif;
-      background:
-        radial-gradient(ellipse at 15% 20%, #ff4f9a 0, transparent 35%),
-        radial-gradient(ellipse at 85% 80%, #664cff 0, transparent 38%),
-        linear-gradient(135deg, #16132f, #241044);
     }
 
-    .card {
-      width: min(90vw, 620px);
-      padding: 48px 32px;
-      text-align: center;
-      border: 1px solid #ffffff30;
-      border-radius: 32px;
-      background: #ffffff12;
-      box-shadow: 0 24px 100px #09051c88;
-      backdrop-filter: blur(18px);
-      animation: appear .7s ease-out;
-    }
+    main { max-width: 900px; margin: auto; }
 
-    .emoji {
-      font-size: 72px;
-      display: inline-block;
-      animation: wobble 2s infinite ease-in-out;
-    }
+    h1 { margin: 0 0 6px; }
 
-    h1 {
-      margin: 14px 0;
-      font-size: clamp(2.2rem, 8vw, 4rem);
-      line-height: 1;
-      letter-spacing: -3px;
-    }
-
-    p {
-      color: #e4dff9;
-      font-size: 1.1rem;
-      line-height: 1.6;
-    }
-
-    .buttons {
+    .toolbar {
       display: flex;
-      justify-content: center;
+      align-items: center;
       flex-wrap: wrap;
       gap: 12px;
-      margin-top: 28px;
+      margin: 18px 0;
     }
 
     button {
       border: 0;
-      border-radius: 999px;
-      padding: 14px 22px;
-      color: #25123c;
-      background: #ffe66d;
+      border-radius: 10px;
+      padding: 10px 16px;
+      color: #111522;
+      background: #a8c7ff;
       font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .stats {
+      padding: 9px 12px;
+      border: 1px solid #30384e;
+      border-radius: 10px;
+      background: #1a2030;
+    }
+
+    #status { min-height: 24px; color: #ffd66b; }
+
+    #board-wrap {
+      width: 100%;
+      height: min(70vh, 680px);
+      overflow: auto;
+      border: 2px solid #3a4560;
+      border-radius: 12px;
+      background: #20283a;
+      overscroll-behavior: contain;
+    }
+
+    #board {
+      display: grid;
+      grid-template-columns: repeat(150, 22px);
+      grid-template-rows: repeat(150, 22px);
+      width: max-content;
+      user-select: none;
+    }
+
+    .cell {
+      display: grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      border: 1px solid #69738a;
+      background: #aeb9ce;
+      color: #152036;
+      font-size: 13px;
       font-weight: 800;
       cursor: pointer;
-      transition: transform .18s, box-shadow .18s;
     }
 
-    button:hover {
-      transform: translateY(-4px) rotate(-2deg);
-      box-shadow: 0 10px 28px #ffe66d55;
+    .cell:hover:not(.open) { background: #d1d9e8; }
+
+    .cell.open {
+      border-color: #485267;
+      background: #dce2ed;
+      cursor: default;
     }
 
-    button.secondary {
-      color: white;
-      background: #ffffff20;
-      border: 1px solid #ffffff40;
-    }
+    .cell.flag { background: #ffd66b; }
+    .cell.mine { background: #ff647c; }
 
-    #message {
-      min-height: 30px;
-      margin-top: 24px;
-      color: #ffe66d;
-      font-weight: 700;
-    }
-
-    .confetti {
-      position: fixed;
-      top: -20px;
-      width: 10px;
-      height: 14px;
-      pointer-events: none;
-      animation: fall 2.4s linear forwards;
-    }
-
-    @keyframes fall {
-      to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-    }
-
-    @keyframes wobble {
-      0%, 100% { transform: rotate(-8deg) scale(1); }
-      50% { transform: rotate(8deg) scale(1.12); }
-    }
-
-    @keyframes appear {
-      from { opacity: 0; transform: translateY(20px) scale(.96); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
+    .n1 { color: #1764d1; }
+    .n2 { color: #18844a; }
+    .n3 { color: #d63737; }
+    .n4 { color: #693ec1; }
+    .n5 { color: #9b481c; }
+    .n6 { color: #138c98; }
+    .n7 { color: #222; }
+    .n8 { color: #687080; }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="emoji" id="emoji">🛸</div>
-    <h1>Ну привет,<br>легенда.</h1>
-    <p>Ты попал(а) в клуб ничего обычного.<br>Тут официально разрешено быть собой и нажимать кнопки.</p>
+  <main>
+    <h1>💣 Сапёр 150 × 150</h1>
+    <div>Открывай клетки. Правый клик — поставить или убрать флажок.</div>
 
-    <div class="buttons">
-      <button onclick="party()">Устроить хаос ✨</button>
-      <button class="secondary" onclick="compliment()">Скажи что-нибудь хорошее</button>
+    <div class="toolbar">
+      <button id="new-game">Новая игра</button>
+      <div class="stats">🚩 Флажки: <span id="flags">0</span> / 3375</div>
+      <div class="stats">⏱️ Время: <span id="time">0</span> сек.</div>
     </div>
 
-    <div id="message">Ждём твоего первого клика…</div>
+    <div id="status">Первый клик всегда безопасен.</div>
+
+    <div id="board-wrap">
+      <div id="board" aria-label="Игровое поле сапёра"></div>
+    </div>
   </main>
 
   <script>
-    const compliments = [
-      "У тебя сегодня вайб главного героя.",
-      "Ты выглядишь как человек, который знает секретный уровень.",
-      "Мир стал чуть веселее, потому что ты здесь.",
-      "Твоя энергия — это отдельный вид магии.",
-      "Даже этот сайт считает тебя классным человеком."
-    ];
+    const SIZE = 150;
+    const MINES = 3375;
+    const boardElement = document.getElementById("board");
+    const flagsElement = document.getElementById("flags");
+    const timeElement = document.getElementById("time");
+    const statusElement = document.getElementById("status");
 
-    const emojis = ["🛸", "🐸", "🪩", "🍕", "👾", "🦆", "🌈"];
+    let cells, gameOver, started, flagCount, seconds, timer;
 
-    function compliment() {
-      document.getElementById("message").textContent =
-        compliments[Math.floor(Math.random() * compliments.length)];
-      document.getElementById("emoji").textContent =
-        emojis[Math.floor(Math.random() * emojis.length)];
+    function startGame() {
+      clearInterval(timer);
+      cells = Array.from({ length: SIZE * SIZE }, () => ({
+        mine: false, open: false, flagged: false, count: 0
+      }));
+      gameOver = false;
+      started = false;
+      flagCount = 0;
+      seconds = 0;
+      flagsElement.textContent = "0";
+      timeElement.textContent = "0";
+      statusElement.textContent = "Первый клик всегда безопасен.";
+
+      boardElement.replaceChildren();
+      const fragment = document.createDocumentFragment();
+
+      for (let i = 0; i < cells.length; i++) {
+        const el = document.createElement("div");
+        el.className = "cell";
+        el.dataset.index = i;
+        el.addEventListener("click", () => openCell(i));
+        el.addEventListener("contextmenu", event => {
+          event.preventDefault();
+          toggleFlag(i);
+        });
+        fragment.appendChild(el);
+      }
+
+      boardElement.appendChild(fragment);
     }
 
-    function party() {
-      document.getElementById("message").textContent = "ХАОС УСПЕШНО УСТРОЕН. 🪩";
-      for (let i = 0; i < 100; i++) {
-        const piece = document.createElement("div");
-        piece.className = "confetti";
-        piece.style.left = Math.random() * 100 + "vw";
-        piece.style.background = `hsl(${Math.random() * 360}, 90%, 65%)`;
-        piece.style.animationDelay = Math.random() * 0.7 + "s";
-        document.body.appendChild(piece);
-        setTimeout(() => piece.remove(), 3200);
+    function neighbors(index) {
+      const row = Math.floor(index / SIZE);
+      const col = index % SIZE;
+      const result = [];
+
+      for (let dr = -1; dr <= 1; dr++) {
+        for (let dc = -1; dc <= 1; dc++) {
+          if (dr === 0 && dc === 0) continue;
+          const r = row + dr, c = col + dc;
+          if (r >= 0 && r < SIZE && c >= 0 && c < SIZE) {
+            result.push(r * SIZE + c);
+          }
+        }
+      }
+      return result;
+    }
+
+    function plantMines(safeIndex) {
+      const safe = new Set([safeIndex, ...neighbors(safeIndex)]);
+      let planted = 0;
+
+      while (planted < MINES) {
+        const i = Math.floor(Math.random() * cells.length);
+        if (cells[i].mine || safe.has(i)) continue;
+        cells[i].mine = true;
+        planted++;
+      }
+
+      for (let i = 0; i < cells.length; i++) {
+        if (!cells[i].mine) {
+          cells[i].count = neighbors(i).filter(n => cells[n].mine).length;
+        }
       }
     }
+
+    function openCell(index) {
+      if (gameOver || cells[index].open || cells[index].flagged) return;
+
+      if (!started) {
+        started = true;
+        plantMines(index);
+        timer = setInterval(() => {
+          seconds++;
+          timeElement.textContent = seconds;
+        }, 1000);
+      }
+
+      if (cells[index].mine) {
+        cells[index].open = true;
+        drawCell(index);
+        loseGame();
+        return;
+      }
+
+      // Итеративное раскрытие пустой области, чтобы не переполнять стек.
+      const queue = [index];
+      let cursor = 0;
+
+      while (cursor < queue.length) {
+        const current = queue[cursor++];
+        const cell = cells[current];
+        if (cell.open || cell.flagged || cell.mine) continue;
+
+        cell.open = true;
+
+        if (cell.count === 0) {
+          for (const n of neighbors(current)) {
+            if (!cells[n].open && !cells[n].flagged && !cells[n].mine) {
+              queue.push(n);
+            }
+          }
+        }
+      }
+
+      drawAllOpen();
+      checkWin();
+    }
+
+    function toggleFlag(index) {
+      if (gameOver || cells[index].open) return;
+
+      cells[index].flagged = !cells[index].flagged;
+      flagCount += cells[index].flagged ? 1 : -1;
+      flagsElement.textContent = flagCount;
+      drawCell(index);
+      checkWin();
+    }
+
+    function drawCell(index) {
+      const cell = cells[index];
+      const el = boardElement.children[index];
+
+      el.className = "cell";
+      el.textContent = "";
+
+      if (cell.flagged && !cell.open) {
+        el.classList.add("flag");
+        el.textContent = "🚩";
+      } else if (cell.open) {
+        el.classList.add("open");
+        if (cell.mine) {
+          el.classList.add("mine");
+          el.textContent = "💣";
+        } else if (cell.count > 0) {
+          el.classList.add(`n${cell.count}`);
+          el.textContent = cell.count;
+        }
+      }
+    }
+
+    function drawAllOpen() {
+      for (let i = 0; i < cells.length; i++) {
+        if (cells[i].open) drawCell(i);
+      }
+    }
+
+    function loseGame() {
+      gameOver = true;
+      clearInterval(timer);
+      for (let i = 0; i < cells.length; i++) {
+        if (cells[i].mine) {
+          cells[i].open = true;
+          drawCell(i);
+        }
+      }
+      statusElement.textContent = "Бум! Ты подорвался. Нажми «Новая игра».";
+    }
+
+    function checkWin() {
+      const won = cells.every(cell => cell.mine ? cell.flagged : cell.open);
+      if (won && !gameOver) {
+        gameOver = true;
+        clearInterval(timer);
+        statusElement.textContent = "🎉 Победа! Все мины найдены.";
+      }
+    }
+
+    document.getElementById("new-game").addEventListener("click", startGame);
+    startGame();
   </script>
 </body>
 </html>
